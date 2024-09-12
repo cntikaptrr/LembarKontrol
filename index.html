@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengganti Lembar Kontrol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Persyaratan Surat Online</h1>
+    </header>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Cari berdasarkan nama seksi atau layanan" oninput="filterTable()">
+    </div>
+    <main class="container">
+        <h3>Daftar Layanan</h3>
+        <table id="serviceTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Seksi</th>
+                    <th>Nama</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <nav id="pagination"></nav>
+    </main>
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Close">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
