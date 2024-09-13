@@ -1,9 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-$servername = "172.16.16.81";
-$username = "surat";
-$password = "S1805mu!";
+$servername = "172.0.0.1";
+$username = "root";
+$password = "";
 $dbname = "surat";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
