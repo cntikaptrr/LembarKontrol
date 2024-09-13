@@ -66,6 +66,7 @@ button, .action-btn, .pagination-btn {
     padding: 8px 16px;
     font-size: 14px;
     transition: background-color 0.3s ease-in-out;
+    margin: 0 2px;
 }
 
 .action-btn, .pagination-btn {
@@ -76,8 +77,22 @@ button, .action-btn, .pagination-btn {
     background-color: #0056b3;
 }
 
+
 .pagination-btn.active {
     background-color: #333;
+}
+
+.pagination-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.prev-btn, .next-btn {
+    background-color: #28a745;
+}
+
+.prev-btn:hover, .next-btn:hover {
+    background-color: #218838;
 }
 
 .search-container {
@@ -105,7 +120,7 @@ button, .action-btn, .pagination-btn {
     z-index: 9999;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 150%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
@@ -117,7 +132,7 @@ button, .action-btn, .pagination-btn {
     padding: 20px;
     border-radius: 12px;
     width: 80%;
-    max-width: 600px;
+    max-width: 700px;
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
