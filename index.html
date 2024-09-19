@@ -1,39 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengganti Lembar Kontrol</title>
+    <title>Persyaratan Surat Online - Daftar Layanan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <header class="header">
+    <header>
         <h1>Persyaratan Surat Online</h1>
+        <p>Daftar Layanan</p>
     </header>
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Cari berdasarkan nama seksi atau layanan" oninput="filterTable()">
-    </div>
-    <main class="container">
-        <h3>Daftar Layanan</h3>
+
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Cari layanan...">
+        </div>
+
         <table id="serviceTable">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>No</th>
                     <th>Seksi</th>
-                    <th>Nama</th>
+                    <th>Nama Layanan</th>
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="table-body"></tbody>
+            <tbody id="tableBody"></tbody>
         </table>
-        <nav id="pagination"></nav>
-    </main>
+
+        <div id="pagination"></div>
+    </div>
+
     <div id="detailModal" class="modal">
         <div class="modal-content">
-            <div id="modal-body"></div>
+            <span class="close">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <div id="modalBody"></div>
         </div>
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>
