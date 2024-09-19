@@ -1,18 +1,14 @@
+let services = [];
+let filteredServices = [];
+const itemsPerPage = 10;
+let currentPage = 1;
+
 async function fetchServices() {
     try {
         const response = await fetch('getServices.php');
         if (!response.ok) throw new Error('Network response was not ok');
-
-        const textData = await response.text();
-        console.log('Raw response:', textData); // Log response dari server
-        try {
-            const parsedData = JSON.parse(textData);
-            console.log('Parsed data:', parsedData); // Log data yang sudah di-parse
-            return parsedData;
-        } catch (jsonError) {
-            console.error('JSON parsing error:', jsonError);
-            return [];
-        }
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Error fetching services:', error);
         return [];
@@ -22,25 +18,26 @@ async function fetchServices() {
 async function initialize() {
     services = await fetchServices();
     filteredServices = [...services];
-    renderTable(1);
+    renderTable();
+    document.getElementById('searchInput').addEventListener('input', filterTable);
 }
 
-function renderTable(page = 1) {
-    const rowsPerPage = 10;
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const paginatedServices = filteredServices.slice(start, end);
+function renderTable() {
+    const tableBody = document.getElementById('tableBody');
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageServices = filteredServices.slice(start, end);
 
-    const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = '';
-
-    paginatedServices.forEach((service, index) => {
+    pageServices.forEach((service, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${index + 1 + start}</td>
-            <td>${service.teams_nama}</td>  <!-- teams_nama digunakan untuk seksi -->
-            <td>${service.layanan_nama}</td> <!-- layanan_nama digunakan untuk nama layanan -->
-            <td><button class="action-btn" onclick="showDetails('${service.layanan_id}')">Persyaratan</button></td>
+            <td data-label="No">${start + index + 1}</td>
+            <td data-label="Seksi">${service.teams_nama}</td>
+            <td data-label="Nama Layanan">${service.layanan_nama}</td>
+            <td data-label="Action">
+                <button class="action-btn" onclick="showDetails('${service.layanan_id}')">Persyaratan</button>
+            </td>
         `;
         tableBody.appendChild(row);
     });
@@ -50,112 +47,99 @@ function renderTable(page = 1) {
 
 function renderPagination() {
     const pagination = document.getElementById('pagination');
+    const pageCount = Math.ceil(filteredServices.length / itemsPerPage);
     pagination.innerHTML = '';
-    const totalPages = Math.ceil(filteredServices.length / 10);
-    let currentPage = 1;
 
-    // Page buttons
-    for (let i = 1; i <= totalPages; i++) {
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.innerText = 'Previous';
+    prevBtn.classList.add('pagination-btn');
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+            renderPagination();
+        }
+    };
+    prevBtn.disabled = currentPage === 1;
+    pagination.appendChild(prevBtn);
+
+    // Calculate range of page numbers to show
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(pageCount, startPage + 4);
+    startPage = Math.max(1, endPage - 4);
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
         const btn = document.createElement('button');
-        btn.className = 'pagination-btn';
         btn.innerText = i;
+        btn.classList.add('pagination-btn');
+        if (i === currentPage) btn.classList.add('active');
         btn.onclick = () => {
             currentPage = i;
-            renderTable(currentPage);
-            updatePaginationButtons();
+            renderTable();
+            renderPagination();
         };
         pagination.appendChild(btn);
     }
 
-    function updatePaginationButtons() {
-        const buttons = pagination.getElementsByClassName('pagination-btn');
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].classList.remove('active');
-            if (buttons[i].innerText == currentPage) {
-                buttons[i].classList.add('active');
-            }
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.innerText = 'Next';
+    nextBtn.classList.add('pagination-btn');
+    nextBtn.onclick = () => {
+        if (currentPage < pageCount) {
+            currentPage++;
+            renderTable();
+            renderPagination();
         }
-        prevBtn.disabled = (currentPage === 1);
-        nextBtn.disabled = (currentPage === totalPages);
-    }
+    };
+    nextBtn.disabled = currentPage === pageCount;
+    pagination.appendChild(nextBtn);
 }
 
 function filterTable() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    filteredServices = services.filter(service =>
-        service.teams_nama.toLowerCase().includes(searchInput) ||
-        service.layanan_nama.toLowerCase().includes(searchInput)
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    filteredServices = services.filter(service => 
+        service.teams_nama.toLowerCase().includes(searchTerm) ||
+        service.layanan_nama.toLowerCase().includes(searchTerm)
     );
-    renderTable(1);
+    currentPage = 1;
+    renderTable();
 }
 
 function showDetails(id) {
-    const service = services.find(s => s.layanan_id === String(id)); // Cast id to string
-    if (!service) {
-        console.error('Service not found for ID:', id);
-        return;
-    }
-
-    const modalBody = document.getElementById('modal-body');
-
-    modalBody.innerHTML = `
-        <div class="modal-header">
-            <h4>${service.layanan_nama}</h4>  <!-- layanan_nama -->
-            <button class="close-btn" aria-label="Close">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="modal-detail-item">
-                <strong>Format Surat:</strong>
-                <span class="detail-value">${service.layanan_format}</span>
-            </div>
-            <div class="modal-detail-item">
-                <strong>Janji Layanan:</strong>
-                <span class="detail-value">${service.layanan_janji}</span>
-            </div>
-            <div class="modal-detail-item">
-    <strong>Hardcopy:</strong>
-    
-        ${service.layanan_hardcopy === '1'
-            ? '<span class="hardcopy-green">Wajib Diajukan</span>'
-            : service.layanan_hardcopy === '2'
-                ? '<span class="hardcopy-red">Tidak Wajib Diajukan</span>'
-                : service.layanan_hardcopy
-        }
-   
-</div>
-            <h5>Persyaratan</h5>
-            <table>
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Uraian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${service.ceklist_uraian.map((item, index) => `  <!-- ceklist_uraian -->
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${item}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
+    const service = services.find(s => s.layanan_id === id);
+    if (!service) return;
 
     const modal = document.getElementById('detailModal');
-    modal.style.display = 'flex';
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
 
-    const closeBtn = modal.querySelector('.close-btn');
-    closeBtn.onclick = () => {
-        modal.style.display = 'none';
-    };
+    modalTitle.textContent = service.layanan_nama;
+    modalBody.innerHTML = `
+        <p><strong>Format Surat:</strong> ${service.layanan_format}</p>
+        <p><strong>Janji Layanan:</strong> ${service.layanan_janji}</p>
+    <p>
+    <strong>Hardcopy:</strong> 
+    <span class="status-button ${service.layanan_hardcopy === '2' ? 'status-wajib' : 'status-tidak-wajib'}">
+        ${service.layanan_hardcopy === '2' ? 'WAJIB DIAJUKAN' : 'TIDAK WAJIB DIAJUKAN'}
+    </span>
+</p>
+        <h3>Persyaratan:</h3>
+        <ol>
+            ${service.ceklist_uraian.map(item => `<li>${item}</li>`).join('')}
+        </ol>
+    `;
 
+    modal.style.display = 'block';
+
+    const closeBtn = document.getElementsByClassName('close')[0];
+    closeBtn.onclick = () => modal.style.display = 'none';
     window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
+        if (event.target === modal) modal.style.display = 'none';
     };
 }
 
-initialize();
+// Initialize the script on page load
+document.addEventListener('DOMContentLoaded', initialize);
