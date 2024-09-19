@@ -100,7 +100,7 @@ function renderPagination() {
 
 function filterTable() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    filteredServices = services.filter(service => 
+    filteredServices = services.filter(service =>
         service.teams_nama.toLowerCase().includes(searchTerm) ||
         service.layanan_nama.toLowerCase().includes(searchTerm)
     );
@@ -117,18 +117,30 @@ function showDetails(id) {
     const modalBody = document.getElementById('modalBody');
 
     modalTitle.textContent = service.layanan_nama;
+    
+    // Fungsi untuk mendeteksi dan menambahkan hyperlink otomatis
+    const ceklistUraianHTML = service.ceklist_uraian
+        .map(item => {
+            const formattedItem = item.replace(
+                /(https?:\/\/[^\s]+)/g, // Pola untuk URL
+                '<a href="$1" target="_blank">$1</a>' // Menambahkan hyperlink
+            );
+            return `<li>${formattedItem}</li>`;
+        })
+        .join('');
+
     modalBody.innerHTML = `
         <p><strong>Format Surat:</strong> ${service.layanan_format}</p>
         <p><strong>Janji Layanan:</strong> ${service.layanan_janji}</p>
-    <p>
-    <strong>Hardcopy:</strong> 
-    <span class="status-button ${service.layanan_hardcopy === '2' ? 'status-wajib' : 'status-tidak-wajib'}">
-        ${service.layanan_hardcopy === '2' ? 'WAJIB DIAJUKAN' : 'TIDAK WAJIB DIAJUKAN'}
-    </span>
-</p>
+        <p>
+            <strong>Hardcopy:</strong> 
+            <span class="status-button ${service.layanan_hardcopy === '2' ? 'status-wajib' : 'status-tidak-wajib'}">
+            ${service.layanan_hardcopy === '2' ? 'WAJIB DIAJUKAN' : 'TIDAK WAJIB DIAJUKAN'}
+            </span>
+        </p>
         <h3>Persyaratan:</h3>
         <ol>
-            ${service.ceklist_uraian.map(item => `<li>${item}</li>`).join('')}
+            ${ceklistUraianHTML}
         </ol>
     `;
 
