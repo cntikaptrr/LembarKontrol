@@ -17,13 +17,14 @@ $sql = "SELECT
             layanan.id AS layanan_id, 
             layanan.nama AS layanan_nama, 
             layanan.deskripsi AS layanan_format,
-            layanan.janji AS layanan_janji,  
+            layanan.janji AS layanan_janji,
             layanan.hardcopy AS layanan_hardcopy,  
             GROUP_CONCAT(ceklist.uraian SEPARATOR '|||') AS ceklist_uraian,  
             teams.nama AS teams_nama
         FROM layanan
         LEFT JOIN ceklist ON layanan.id = ceklist.layanan
         LEFT JOIN teams ON layanan.teams = teams.id
+        WHERE layanan.status = 1
         GROUP BY layanan.id, teams.nama;";
 
 $result = $conn->query($sql);
