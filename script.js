@@ -117,7 +117,7 @@ function showDetails(id) {
     const modalBody = document.getElementById('modalBody');
 
     modalTitle.textContent = service.layanan_nama;
-    
+
     // Fungsi untuk mendeteksi dan menambahkan hyperlink otomatis
     const ceklistUraianHTML = service.ceklist_uraian
         .map(item => {
@@ -130,14 +130,24 @@ function showDetails(id) {
         .join('');
 
     modalBody.innerHTML = `
-        <p><strong>Format Surat:</strong> ${service.layanan_format}</p>
-        <p><strong>Janji Layanan:</strong> ${service.layanan_janji}</p>
-        <p>
-            <strong>Hardcopy:</strong> 
-            <span class="status-button ${service.layanan_hardcopy === '2' ? 'status-wajib' : 'status-tidak-wajib'}">
-            ${service.layanan_hardcopy === '2' ? 'WAJIB DIAJUKAN' : 'TIDAK WAJIB DIAJUKAN'}
-            </span>
-        </p>
+     <table border="1" cellpadding="5" cellspacing="0">
+  <tr>
+    <td><strong>Format Surat</strong></td>
+    <td>${service.layanan_format}</td>
+  </tr>
+  <tr>
+    <td><strong>Janji Layanan</strong></td>
+    <td>${service.layanan_janji}</td>
+  </tr>
+  <tr>
+    <td><strong>Hardcopy</strong></td>
+    <td>
+      <span class="status-button ${service.layanan_hardcopy === '2' ? 'status-wajib' : 'status-tidak-wajib'}">
+      ${service.layanan_hardcopy === '2' ? 'WAJIB DIAJUKAN' : 'TIDAK WAJIB DIAJUKAN'}
+      </span>
+    </td>
+  </tr>
+</table>
         <h3>Persyaratan:</h3>
         <ol>
             ${ceklistUraianHTML}
